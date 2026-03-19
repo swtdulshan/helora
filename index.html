@@ -2,45 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
   <title>Helora — Dispatch Portal</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-normalize/modern-normalize.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root { --gold: #b28d42; --dark: #1a1a1a; --bg: #f8fafc; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 20px; color: #334155; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 10px; color: #334155; }
     
-    .container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 380px; gap: 30px; }
-    @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+    /* Responsive Container */
+    .container { 
+      max-width: 1100px; 
+      margin: 0 auto; 
+      display: grid; 
+      grid-template-columns: 1fr 350px; /* Laptop Layout */
+      gap: 20px; 
+    }
 
-    .card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-    h2 { margin: 0 0 20px 0; font-weight: 800; color: var(--gold); }
+    /* Tablet and Mobile Layout */
+    @media (max-width: 992px) { 
+      .container { grid-template-columns: 1fr; } 
+      .preview-card { display: none; } /* Hide preview on mobile to save space, or move it below */
+    }
+
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    h2 { margin: 0 0 15px 0; font-weight: 800; color: var(--gold); font-size: 22px; }
     
-    label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; display: block; margin: 15px 0 6px; }
-    input, textarea { padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 14px; }
+    label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; display: block; margin: 12px 0 5px; }
+    input, textarea { padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 16px; /* 16px prevents iOS zoom on focus */ }
     
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    /* Table Adjustments for Mobile */
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 300px; }
     th { text-align: left; font-size: 11px; color: #94a3b8; padding: 10px; border-bottom: 2px solid #f1f5f9; }
-    .btn-add { background: #f0fdf4; color: #166534; border: 1px dashed #bbf7d0; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 12px; }
+    td { padding: 5px 0; }
 
-    .btn-save { background: var(--dark); color: white; padding: 16px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 25px; }
-    .btn-pdf { background: var(--gold); color: white; padding: 20px; border: none; border-radius: 8px; width: 100%; font-weight: 800; cursor: pointer; margin-top: 15px; font-size: 16px; display: none; }
+    .btn-add { background: #f0fdf4; color: #166534; border: 1px dashed #bbf7d0; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    .btn-save { background: var(--dark); color: white; padding: 18px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; }
+    .btn-pdf { background: var(--gold); color: white; padding: 18px; border: none; border-radius: 8px; width: 100%; font-weight: 800; cursor: pointer; margin-top: 15px; font-size: 16px; display: none; }
 
-    /* PDF DESIGN FIXES */
+    /* PDF DESIGN - Hidden from UI */
     #pdf-slip { 
-      width: 140mm; /* Slightly smaller than A5 to ensure no clipping */
-      padding: 15mm; 
-      background: #ffffff !important; 
-      color: #000000 !important;
-      display: none; /* Keep hidden normally */
-      flex-direction: column;
+      width: 140mm; padding: 15mm; background: #ffffff !important; color: #000 !important;
+      display: none; flex-direction: column;
     }
     .slip-header { border-bottom: 5px solid black; padding-bottom: 15px; margin-bottom: 25px; }
-    .slip-name { font-size: 40px; font-weight: 900; text-transform: uppercase; margin: 20px 0; line-height: 1.1; color: #000; }
-    .slip-address { font-size: 24px; line-height: 1.4; font-weight: 600; flex-grow: 1; color: #000; }
-    .slip-phone { font-size: 38px; font-weight: 900; border: 4px solid black; padding: 15px; text-align: center; margin-bottom: 20px; color: #000; }
+    .slip-name { font-size: 40px; font-weight: 900; text-transform: uppercase; margin: 20px 0; line-height: 1.1; }
+    .slip-address { font-size: 24px; line-height: 1.4; font-weight: 600; flex-grow: 1; }
+    .slip-phone { font-size: 38px; font-weight: 900; border: 4px solid black; padding: 15px; text-align: center; margin-bottom: 20px; }
     .slip-footer { text-align: center; border-top: 2px dashed black; padding-top: 15px; }
+
+    /* Mobile specific grid for Customer Info */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -48,24 +63,29 @@
   <div class="container">
     <div class="card">
       <h2>Helora Dispatch</h2>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
+      
+      <div class="form-row">
           <div><label>Customer Name</label><input id="cName" placeholder="Full Name"></div>
-          <div><label>Phone Number</label><input id="cPhone" placeholder="07XXXXXXXX"></div>
+          <div><label>Phone Number</label><input id="cPhone" type="tel" placeholder="07XXXXXXXX"></div>
       </div>
+      
       <label>Shipping Address</label>
       <textarea id="cAddress" rows="3" placeholder="Full Address"></textarea>
 
       <label>Products</label>
-      <table id="itemTable">
-          <thead><tr><th>Item</th><th style="width:70px">Qty</th><th style="width:100px">Price</th></tr></thead>
-          <tbody id="itemBody"></tbody>
-      </table>
+      <div class="table-container">
+          <table id="itemTable">
+              <thead><tr><th>Item</th><th style="width:65px">Qty</th><th style="width:95px">Price</th></tr></thead>
+              <tbody id="itemBody"></tbody>
+          </table>
+      </div>
       <button class="btn-add" onclick="addItem()">+ Add Product</button>
 
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:20px">
+      <div class="form-row" style="margin-top:20px; align-items: end;">
           <div><label>Discount</label><input type="number" id="discount" value="0" oninput="calculate()"></div>
           <div style="background:#1a1a1a; color:white; padding:15px; border-radius:8px; text-align:center">
-              Total: LKR <span id="displayNet" style="color:var(--gold); font-weight:800">0</span>
+              <span style="font-size:10px; display:block; opacity:0.7">Total LKR</span>
+              <span id="displayNet" style="color:var(--gold); font-weight:800; font-size:18px">0</span>
           </div>
       </div>
 
@@ -73,7 +93,7 @@
       <button id="pdfBtn" class="btn-pdf" onclick="generatePDF()">2. DOWNLOAD PARCEL LABEL</button>
     </div>
 
-    <div class="card" style="text-align:center; border: 2px solid #ddd; height: fit-content;">
+    <div class="card preview-card" style="text-align:center; border: 2px solid #ddd; height: fit-content;">
         <label>Live Preview</label>
         <div style="text-align:left; padding:10px; border-bottom:1px solid #eee; font-size: 12px;">
             <strong>FROM: HELORA</strong><br>Pannipitiya | 077 057 6860
@@ -122,9 +142,9 @@
         const final = net - (parseFloat(document.getElementById('discount').value) || 0);
         document.getElementById('displayNet').innerText = final.toLocaleString();
         
-        const n = document.getElementById('cName').value || "CUSTOMER NAME";
-        const a = document.getElementById('cAddress').value || "Address details...";
-        const p = document.getElementById('cPhone').value || "07XXXXXXXX";
+        const n = document.getElementById('cName').value || "---";
+        const a = document.getElementById('cAddress').value || "---";
+        const p = document.getElementById('cPhone').value || "---";
         
         document.getElementById('viewName').innerText = n; document.getElementById('pdfName').innerText = n;
         document.getElementById('viewAddress').innerText = a; document.getElementById('pdfAddress').innerText = a;
@@ -137,7 +157,7 @@
 
     async function saveData() {
         const { final, n, p, a } = calculate();
-        if(!n || n === "CUSTOMER NAME") { alert("Please enter Customer Name"); return; }
+        if(!n || n === "---") { alert("Please enter Customer Name"); return; }
         
         const btn = document.getElementById('saveBtn');
         btn.innerText = "Saving..."; btn.disabled = true;
@@ -150,16 +170,18 @@
 
         try {
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            alert("Data Saved! You can now download the Label.");
+            alert("Data Saved Successfully!");
             document.getElementById('pdfBtn').style.display = "block";
             btn.style.display = "none";
-        } catch(e) { alert("Error saving data."); btn.disabled = false; }
+        } catch(e) { 
+            alert("Error saving data. Check your internet connection."); 
+            btn.disabled = false; 
+            btn.innerText = "1. SAVE TO RECORDS";
+        }
     }
 
     async function generatePDF() {
         const element = document.getElementById('pdf-slip');
-        
-        // IMPORTANT: Show the element temporarily for the PDF engine to see it
         element.style.display = 'flex'; 
 
         const opt = {
@@ -171,9 +193,10 @@
         };
         
         html2pdf().set(opt).from(element).save().then(() => {
-            element.style.display = 'none'; // Hide it again
-            alert("Label Downloaded!");
-            location.reload();
+            element.style.display = 'none';
+            if(confirm("Label Downloaded! Reload for next customer?")) {
+                location.reload();
+            }
         });
     }
   </script>
